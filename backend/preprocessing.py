@@ -7,7 +7,16 @@ import math
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.sparse.linalg import svds
+import ssl
 
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
+
+nltk.download('stopwords')
 stopWords = set(stopwords.words("english"))
 stopWords = stopWords.union(
     {
