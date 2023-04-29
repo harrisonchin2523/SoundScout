@@ -1,41 +1,57 @@
-version: '3.8'
+version: "3.7"
 services:
-    backend_flask_app:
-        container_name: ${TEAM_NAME}_backend_app
-        ports:
-                - 0.0.0.0:${APP_PORT}:5000
-        restart: always
-        build:
-                context: ./backend
-                dockerfile: Dockerfile
-                args:
-                        DB_NAME: TEAM_1
-        depends_on:
-                - db
-        environment:
-                - FLASK_APP=app.py
-                - FLASK_RUN_HOST=0.0.0.0
-                - FLASK_DEBUG=0
-        networks:
-                flask_network:
-                        aliases:
-                                - flask-network
-        command: gunicorn --bind 0.0.0.0:5000 --workers 4 "app:app"
-    db:
-        container_name: ${TEAM_NAME}_db
-        image: mariadb:10.5.8
-        restart: always
-        environment:
-                - MYSQL_USER=admin
-                - MYSQL_PASSWORD=admin
-                - MYSQL_DATABASE=kardashiandb
-                - MYSQL_ROOT_PASSWORD=admin
-        volumes:
-                - flask_volume:/var/lib/mysql
-                - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-        networks:
-                - flask_network
+  frontend_app:
+    container_name: ${TEAM_NAME}_frontend_app
+    ports:
+      - ${FRONTEND_EXTERNAL_PORT}:${FRONTEND_INTERNAL_PORT}
+    expose:
+      - ${FRONTEND_EXTERNAL_PORT}
+    restart: always
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    networks:
+      flask_network:
+        aliases:
+          - flask-network
+    command: nginx -g 'daemon off;'
+  backend_flask_app:
+    container_name: ${TEAM_NAME}_backend_flask_app
+    ports:
+      - ${FLASK_EXTERNAL_PORT}:${FLASK_INTERNAL_PORT}
+    expose:
+      - ${FLASK_EXTERNAL_PORT}
+    restart: always
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      - FLASK_APP=${APP_ROOT}.py
+      - FLASK_RUN_HOST=0.0.0.0
+      - FLASK_DEBUG=0
+    networks:
+      flask_network:
+        aliases:
+          - flask-network
+    command: gunicorn --bind 0.0.0.0:${FLASK_INTERNAL_PORT} --workers 4 "${APP_ROOT}:${APP_ROOT}"
+  db:
+    image: mariadb:10.5.8
+    restart: always
+    container_name: ${TEAM_NAME}_db
+    environment:
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - flask_volume:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - flask_network
 volumes:
-        flask_volume:
+  flask_volume:
 networks:
-        flask_network:
+  flask_network:
+    name: ${TEAM_NAME}_flask_network

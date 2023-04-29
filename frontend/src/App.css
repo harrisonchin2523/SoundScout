@@ -1,0 +1,147 @@
+:root {
+  position: sticky;
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(68, 68, 68);
+  z-index: -10;
+  min-height: 100vh;
+  user-select: none;
+  top: 0;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+  /* width: 100%;
+  height: 100%; */
+}
+
+main {
+  position: sticky;
+  min-height: 100vh;
+  /* margin-top: -4rem; */
+  margin-bottom: -3rem;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+}
+
+.parallax-wrap {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: block;
+  z-index: -1;
+}
+
+.parallax-wrap .background-grid {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-image: radial-gradient(circle at 1px 1px, gray 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  font-size: 3rem;
+}
+
+.title h1 {
+  margin-bottom: 0;
+  margin-right: 0.25rem;
+  color: whitesmoke;
+}
+
+.input-box {
+  border-radius: 3rem;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  width: 37.5rem;
+  background-color: whitesmoke;
+  /* z-index: 10; */
+  user-select: none;
+}
+
+.input-box img {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.top-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 4rem;
+  user-select: none;
+}
+
+.input-box input {
+  width: 100%;
+  margin-left: 0.75rem;
+  font-size: 1rem;
+  border: none;
+  outline: 0;
+  background-color: whitesmoke;
+  /* z-index: 10; */
+}
+
+#answer-box {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+  width: 44rem;
+  margin-top: 3rem;
+}
+
+@media (max-width: 1024.02px) {
+  #answer-box .answer .song-title {
+    font-weight: bold;
+    color: whitesmoke;
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+  }
+}
+
+#answer-box .answer .song-title {
+  font-weight: bold;
+  color: whitesmoke;
+  font-size: 1.25rem;
+  margin-bottom: 0.2rem;
+}
+
+footer {
+  position: sticky;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  user-select: none;
+  background-color: transparent;
+  color: whitesmoke;
+  padding: 0rem 4rem;
+  text-align: center;
+}
+
+@media (max-width: 575.98px) {
+  main {
+    margin-top: -4rem;
+  }
+
+  footer {
+    height: 4rem;
+    justify-content: center;
+    padding: 0rem 1rem;
+  }
+}
