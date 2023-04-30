@@ -14,7 +14,6 @@ instance/
 htmlcov/
 
 dist/
-build/
 .env
 *.egg-info/
 helpers/*
