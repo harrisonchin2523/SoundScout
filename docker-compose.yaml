@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.8"
 services:
   frontend_app:
     container_name: ${TEAM_NAME}_frontend_app
