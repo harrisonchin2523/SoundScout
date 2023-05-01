@@ -1,7 +1,6 @@
 import React, { MouseEventHandler } from "react";
 import "./App.css";
 import "./iframe-api";
-import { string } from "yargs";
 declare global {
   interface Window {
     onSpotifyIframeApiReady: any;
@@ -86,7 +85,7 @@ const search: MouseEventHandler<HTMLImageElement> = (e) => {
   result = [];
   EmbedController = null;
   fetch(
-    "http://localhost:5050/search?" +
+    process.env.REACT_API_URL +
       new URLSearchParams({
         title: (document.getElementById("filter-text-val") as HTMLInputElement)
           .value,
@@ -99,7 +98,7 @@ const search: MouseEventHandler<HTMLImageElement> = (e) => {
         result[i] = row;
         let tempDiv = document.createElement("div");
         tempDiv.setAttribute("data-id", i.toString());
-        tempDiv.onclick = function (e) {
+        tempDiv.onclick = function(e) {
           const element = e.target as HTMLElement;
           const i = parseInt(element.getAttribute("data-id") || "0");
           selected = i;
@@ -132,9 +131,9 @@ const parallax = (event: MouseEvent) => {
   const x = (window.innerWidth - event.pageX * 1) / 90;
   const y = (window.innerHeight - event.pageY * 1) / 90;
 
-  (
-    document.querySelector(".parallax-wrap .background-grid") as HTMLDivElement
-  ).style.transform = `translateX(${x}px) translateY(${y}px)`;
+  (document.querySelector(
+    ".parallax-wrap .background-grid"
+  ) as HTMLDivElement).style.transform = `translateX(${x}px) translateY(${y}px)`;
 };
 
 document.addEventListener("mousemove", parallax);
