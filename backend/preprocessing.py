@@ -1,7 +1,7 @@
 import os
 import json
 import nltk
-from nltk.corpus import stopwords
+# from nltk.corpus import stopwords
 import numpy as np
 import math
 import re
@@ -10,7 +10,7 @@ from scipy.sparse.linalg import svds
 from unidecode import unidecode
 import collections
 
-stopWords = set(stopwords.words("english"))
+stopWords = set()
 stopWords = stopWords.union(
     {
         "song",
