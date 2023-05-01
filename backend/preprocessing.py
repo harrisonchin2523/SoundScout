@@ -11,13 +11,13 @@ from unidecode import unidecode
 import collections
 
 stopWords = set()
-stopWords = stopWords.union(
-    {
-        "song",
-        "playlist",
-        "music",
-    }
-)
+# stopWords = stopWords.union(
+#     {
+#         "song",
+#         "playlist",
+#         "music",
+#     }
+# )
 
 total_playlists = 0
 total_tracks = 0
