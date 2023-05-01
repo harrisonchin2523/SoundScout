@@ -13,6 +13,8 @@ let IFrameAPI: any = null;
 let EmbedController: any = null;
 
 let result: String[][] = [];
+let rel_track_list: String[][] = [];
+let irrel_track_list: String[][] = [];
 
 let selected: number = 0;
 
@@ -24,7 +26,7 @@ function App() {
       </div>
       <main>
         <div className="top-text">
-          <div className="title">
+          <div id="title">
             <h1>
               <span style={{ color: "deepskyblue" }}>Sound</span>Scout
             </h1>
@@ -66,9 +68,7 @@ const sendFocus: MouseEventHandler<HTMLDivElement> = (e) => {
   (document.getElementById("filter-text-val") as HTMLInputElement).focus();
 };
 
-const search: MouseEventHandler<HTMLImageElement> = (e) => {
-  checkReady();
-  // (document.getElementById("answer-box") as HTMLDivElement).innerHTML = "";
+function clear() {
   const main: HTMLElement = document.getElementById("result") as HTMLDivElement;
   main.style.display = "grid";
   const box: HTMLElement = document.getElementById("iframe") as HTMLDivElement;
@@ -83,9 +83,20 @@ const search: MouseEventHandler<HTMLImageElement> = (e) => {
     boxbox.removeChild(boxbox.lastElementChild);
   }
   result = [];
+  rel_track_list = [];
+  irrel_track_list = [];
   EmbedController = null;
+}
+
+const search: MouseEventHandler<HTMLImageElement> = (e) => {
+  checkReady();
+  console.log(process.env.REACT_API_URL);
+  // (document.getElementById("answer-box") as HTMLDivElement).innerHTML = "";
+  clear();
+  (document.getElementById("title") as HTMLDivElement).style.display = "none";
   fetch(
-    process.env.REACT_API_URL +
+    // process.env.REACT_API_URL +
+    "http://4300showcase.infosci.cornell.edu:4522/search?" +
       new URLSearchParams({
         title: (document.getElementById("filter-text-val") as HTMLInputElement)
           .value,
@@ -151,15 +162,80 @@ function checkReady() {
 }
 
 const rocUp: MouseEventHandler<HTMLDivElement> = (e) => {
-  console.log(result[selected]);
+  // console.log(result[selected]);
+  if (
+    !rel_track_list.includes(result[selected]) &&
+    !irrel_track_list.includes(result[selected])
+  ) {
+    rel_track_list.push(result[selected]);
+    // console.log("stored");
+  } else {
+    // console.log("already stored");
+  }
 };
 
 const rocDown: MouseEventHandler<HTMLDivElement> = (e) => {
-  console.log(result[selected]);
+  // console.log(result[selected]);
+  if (
+    !rel_track_list.includes(result[selected]) &&
+    !irrel_track_list.includes(result[selected])
+  ) {
+    irrel_track_list.push(result[selected]);
+    // console.log("stored");
+  } else {
+    // console.log("already stored");
+  }
 };
 
 const regen: MouseEventHandler<HTMLDivElement> = (e) => {
-  console.log(result[selected]);
+  let send = {
+    rel_track_list: rel_track_list,
+    irrel_track_list: irrel_track_list,
+  };
+  clear();
+  // process.env.REACT_API_URL +
+  fetch("http://4300showcase.infosci.cornell.edu:4522/rocchio", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: JSON.stringify(send),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      data.forEach((row: string[], i: number) => {
+        // each row is [song name, song artist, song uri]
+        result[i] = row;
+        let tempDiv = document.createElement("div");
+        tempDiv.setAttribute("data-id", i.toString());
+        tempDiv.onclick = function(e) {
+          const element = e.target as HTMLElement;
+          const i = parseInt(element.getAttribute("data-id") || "0");
+          selected = i;
+          EmbedController.loadUri(result[i][2]);
+        };
+        tempDiv.innerHTML = songTemplate(row);
+        const doc = document.getElementById("left") as HTMLElement;
+        doc.appendChild(tempDiv);
+      });
+    })
+    .then(() => {
+      if (IFrameAPI == null) {
+        // MAKE IT WAIT
+      }
+      // console.log(result);
+      const element = document.getElementById("embed-iframe");
+      const options = {
+        width: "400",
+        height: "400",
+        uri: result[0][2],
+      };
+      const callback = (controller: any) => {
+        EmbedController = controller;
+      };
+      IFrameAPI.createController(element, options, callback);
+    });
 };
 
 export default App;
