@@ -145,3 +145,99 @@ footer {
     padding: 0rem 1rem;
   }
 }
+
+#result {
+  margin-top: 2rem;
+  margin-bottom: 4rem;
+  width: calc(820px);
+  height: fit-content;
+  display: none;
+  grid-template-columns: 400px 400px;
+  /* gap: 10px; */
+  background-color: rgba(245, 245, 245, 0.35);
+  border-radius: 0.5rem;
+}
+
+#result #left {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: start;
+}
+
+#result #left > * {
+  cursor: pointer;
+  color: deepskyblue;
+  background-color: rgb(69, 69, 69);
+  margin-left: 0.5rem;
+  margin-top: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+}
+
+#result #left div:last-child {
+  margin-bottom: 0.5rem;
+}
+
+#result #left > *:hover {
+  background-color: rgb(99, 98, 98);
+}
+
+#result #left div p {
+  pointer-events: none;
+  padding-left: 0.5rem;
+  /* font-size: small; */
+  margin: 0;
+}
+
+#result #left div p:nth-child(2) {
+  color: whitesmoke;
+}
+
+#result #right {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: start;
+  margin: 0.5rem;
+}
+
+#roc {
+  display: flex;
+  flex-direction: row;
+}
+
+#roc > * {
+  width: 50%;
+  font-size: 4rem;
+  text-align: center;
+  cursor: pointer;
+  background-color: rgb(69, 69, 69);
+  border-radius: 0.5rem;
+  margin: 0.5rem;
+}
+
+#roc > *:hover {
+  background-color: rgb(99, 98, 98);
+}
+
+#regen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: whitesmoke;
+  cursor: pointer;
+  background-color: rgb(69, 69, 69);
+  border-radius: 0.5rem;
+  margin: 0.5rem;
+  height: 3rem;
+  font-size: 1.25rem;
+}
+
+#regen:hover {
+  background-color: rgb(99, 98, 98);
+  color: deepskyblue;
+}

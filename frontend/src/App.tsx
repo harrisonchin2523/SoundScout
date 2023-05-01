@@ -1,11 +1,23 @@
-import React, { MouseEventHandler, useEffect } from "react";
+import React, { MouseEventHandler } from "react";
 import "./App.css";
+import "./iframe-api";
+import { string } from "yargs";
+declare global {
+  interface Window {
+    onSpotifyIframeApiReady: any;
+  }
+}
+
+let ready: boolean = false;
+
+let IFrameAPI: any = null;
+let EmbedController: any = null;
+
+let result: String[][] = [];
+
+let selected: number = 0;
 
 function App() {
-  // useEffect(() => {
-  //   fetch("http://localhost:5050/start");
-  // }, []);
-
   return (
     <>
       <div className="parallax-wrap">
@@ -19,11 +31,25 @@ function App() {
             </h1>
           </div>
           <div className="input-box" onClick={sendFocus}>
-            <img src="mag.png" onClick={search} />
+            <img src="mag.png" onClick={search} alt="Search" />
             <input placeholder="Search for a playlist" id="filter-text-val" />
           </div>
         </div>
-        <div id="answer-box"></div>
+        <div id="result">
+          <div id="left" />
+          <div id="right">
+            <div id="iframe">
+              <div id="embed-iframe" />
+            </div>
+            <div id="roc">
+              <div onClick={rocUp}>👍</div>
+              <div onClick={rocDown}>👎</div>
+            </div>
+            <div id="regen" onClick={regen}>
+              Regenerate Results
+            </div>
+          </div>
+        </div>
       </main>
       <footer>
         Created by Harrison Chin, Willy Jiang, Joshua Guo, Eric Huang, Alex
@@ -33,8 +59,8 @@ function App() {
   );
 }
 
-function answerBoxTemplate(title: string, titleDesc: string) {
-  return `<div class='song-title'>${title}</div>`;
+function songTemplate(song: string[]) {
+  return `<p>${song[0]}</p><p>${song[1]}</p>`;
 }
 
 const sendFocus: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -42,31 +68,64 @@ const sendFocus: MouseEventHandler<HTMLDivElement> = (e) => {
 };
 
 const search: MouseEventHandler<HTMLImageElement> = (e) => {
-  (document.getElementById("answer-box") as HTMLDivElement).innerHTML = "";
-  const box: HTMLElement = document.getElementById(
-    "answer-box"
-  ) as HTMLDivElement;
+  checkReady();
+  // (document.getElementById("answer-box") as HTMLDivElement).innerHTML = "";
+  const main: HTMLElement = document.getElementById("result") as HTMLDivElement;
+  main.style.display = "grid";
+  const box: HTMLElement = document.getElementById("iframe") as HTMLDivElement;
   while (box.lastElementChild) {
     box.removeChild(box.lastElementChild);
   }
+  let temp = document.createElement("div");
+  temp.id = "embed-iframe";
+  box.appendChild(temp);
+  const boxbox: HTMLElement = document.getElementById("left") as HTMLDivElement;
+  while (boxbox.lastElementChild) {
+    boxbox.removeChild(boxbox.lastElementChild);
+  }
+  result = [];
+  EmbedController = null;
   fetch(
     "http://localhost:5050/search?" +
-    new URLSearchParams({
-      title: (document.getElementById("filter-text-val") as HTMLInputElement)
-        .value,
-    }).toString()
+      new URLSearchParams({
+        title: (document.getElementById("filter-text-val") as HTMLInputElement)
+          .value,
+      }).toString()
   )
     .then((response) => response.json())
     .then((data) =>
-      data.forEach((row: string[]) => {
+      data.forEach((row: string[], i: number) => {
+        // each row is [song name, song artist, song uri]
+        result[i] = row;
         let tempDiv = document.createElement("div");
-        tempDiv.className = "answer";
-        tempDiv.innerHTML = answerBoxTemplate(row[0], row[3]);
-        (document.getElementById("answer-box") as HTMLDivElement).appendChild(
-          tempDiv
-        );
+        tempDiv.setAttribute("data-id", i.toString());
+        tempDiv.onclick = function (e) {
+          const element = e.target as HTMLElement;
+          const i = parseInt(element.getAttribute("data-id") || "0");
+          selected = i;
+          EmbedController.loadUri(result[i][2]);
+        };
+        tempDiv.innerHTML = songTemplate(row);
+        const doc = document.getElementById("left") as HTMLElement;
+        doc.appendChild(tempDiv);
       })
-    );
+    )
+    .then(() => {
+      if (IFrameAPI == null) {
+        // MAKE IT WAIT
+      }
+      // console.log(result);
+      const element = document.getElementById("embed-iframe");
+      const options = {
+        width: "400",
+        height: "400",
+        uri: result[0][2],
+      };
+      const callback = (controller: any) => {
+        EmbedController = controller;
+      };
+      IFrameAPI.createController(element, options, callback);
+    });
 };
 
 const parallax = (event: MouseEvent) => {
@@ -79,5 +138,29 @@ const parallax = (event: MouseEvent) => {
 };
 
 document.addEventListener("mousemove", parallax);
+
+window.onSpotifyIframeApiReady = (IFrameApi: any) => {
+  IFrameAPI = IFrameApi;
+  ready = true;
+  console.log("ready");
+};
+
+function checkReady() {
+  if (!ready) {
+    window.setTimeout(checkReady, 50);
+  }
+}
+
+const rocUp: MouseEventHandler<HTMLDivElement> = (e) => {
+  console.log(result[selected]);
+};
+
+const rocDown: MouseEventHandler<HTMLDivElement> = (e) => {
+  console.log(result[selected]);
+};
+
+const regen: MouseEventHandler<HTMLDivElement> = (e) => {
+  console.log(result[selected]);
+};
 
 export default App;
