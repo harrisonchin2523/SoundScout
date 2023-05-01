@@ -23,7 +23,6 @@ else:
 
 
 load_dotenv()
-nltk.download("punkt")
 
 # ROOT_PATH for linking with all your files.
 # Feel free to use a config.py or settings.py with a global export variable
@@ -42,7 +41,6 @@ nltk.download("punkt")
 # )
 
 # # Path to init.sql file. This file can be replaced with your own file for testing on localhost, but do NOT move the init.sql file
-# # albert xiao is so hot
 # mysql_engine.load_file_into_db()
 
 app = Flask(__name__)
