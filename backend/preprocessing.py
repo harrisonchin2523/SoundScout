@@ -48,9 +48,7 @@ def process_playlist(playlist):
     playlist_tracks = []
     for track in playlist["tracks"]:
         total_tracks += 1
-        playlist_tracks.append(
-            (track["track_name"], track["artist_name"], track["track_uri"])
-        )
+        playlist_tracks.append((track["track_name"], track["artist"], track["uri"]))
 
     nname = normalize_name(playlist["name"])
     title_histogram[nname] += 1
