@@ -23,6 +23,7 @@ else:
 
 
 load_dotenv()
+nltk.download("wordnet")
 nltk.download("punkt")
 
 # albert xiao is so hot
