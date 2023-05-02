@@ -39,44 +39,32 @@ def search():
     query = request.args.get("title")
     query = preprocessing.normalize_name(query)
     top_songs = []
-    k = 15
-    if query not in list(preprocessing.documents.keys()):
+    k = 14
+    if query not in list(text_mining.playlist_name_to_index.keys()):
         print("Not an existing playlist name.")
         # Find best matches to existing playlist names
         query = " ".join(preprocessing.tokenize(query))
-        closest_playlist_names = process.extract(
-            query,
-            list(preprocessing.documents.keys()),
-            scorer=fuzz.token_set_ratio,
-        )
-        print(closest_playlist_names)
-        if closest_playlist_names[0][1] == 100:
-            exact_matches = [
-                name for (name, score) in closest_playlist_names if score == 100
-            ]
-            for match in exact_matches:
-                # Get best songs of match
-                closest_playlists = text_mining.closest_playlists(
-                    match, k=10 // len(exact_matches)
-                )
-                for song_info, score in text_mining.top_songs(closest_playlists)[
-                    : k // len(exact_matches)
-                ]:
-                    top_songs.append((song_info, score))
-            print(top_songs[:k])
-            top_songs.sort(key=lambda x: x[1], reverse=True)
-            return [song for song, score in top_songs[:k]]
+        closest_playlist_names = text_mining.closest_playlist_names(query)
+        print("Matching with:", closest_playlist_names)
+        if len(closest_playlist_names) > 0:
+            # Query terms exist in playlist titles
+            top_songs = text_mining.closest_songs_to_query(closest_playlist_names, k=k)
+            query = closest_playlist_names
         else:
-            # No optimal matches, settle on closest existing name
-            query = closest_playlist_names[0][0]
-    # Query is existing playlist name
-    closest_playlists = text_mining.closest_playlists(query, k=10)
-    for name, _, _ in closest_playlists:
-        print(name)
-    top_songs.extend(text_mining.top_songs(closest_playlists))
-    print(top_songs[:k])
-    top_songs.sort(key=lambda x: x[1], reverse=True)
-    return [song for song, score in top_songs[:k]]
+            # Find closest literal playlist title
+            closest_name, score = process.extract(
+                query,
+                list(text_mining.playlist_name_to_index.keys()),
+                scorer=fuzz.token_set_ratio,
+            )[0]
+            top_songs = text_mining.closest_songs_to_query([closest_name], k=k)
+            query = [closest_name]
+    else:
+        # Query is existing playlist name
+        top_songs = text_mining.closest_songs_to_query([query], k=k)
+        query = [query]
+    print(top_songs)
+    return query, [song for song, score in top_songs]
 
 
 @app.route("/rocchio", methods=["POST"])
@@ -90,11 +78,9 @@ def rocchio():
     # if both are empty then just send the results as usual
     print("Relevant:", rel_track_list)
     print("Irrelevant:", irrel_track_list)
-    closest_playlists = text_mining.regenerate_closest_playlists(
-        rel_track_list, irrel_track_list
+    q1, top_songs = text_mining.rocchio(
+        [], rel_track_list, irrel_track_list, clip=False
     )
-    top_songs = text_mining.top_songs(closest_playlists)
-    top_songs.sort(key=lambda x: x[1], reverse=True)
     results = [song for song, score in top_songs[:k]]
     print(results)
-    return results
+    return q1, results

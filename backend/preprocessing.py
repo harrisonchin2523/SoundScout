@@ -21,7 +21,7 @@ stopWords = stopWords.union(
 
 total_playlists = 0
 total_tracks = 0
-documents = {}  # playlist_name : [song1, song2, ...]
+documents = {}  # song : [playlist1, playlist2, ...]
 title_histogram = collections.Counter()
 
 
@@ -43,19 +43,17 @@ def process_mpd(path):
 def process_playlist(playlist):
     global total_playlists, total_tracks, title_histogram
     total_playlists += 1
+    nname = normalize_name(playlist["name"])
 
     # Create documents for SVD
-    playlist_tracks = []
     for track in playlist["tracks"]:
         total_tracks += 1
-        playlist_tracks.append((track["track_name"], track["artist"], track["uri"]))
+        song = (track["track_name"], track["artist"], track["uri"])
+        if song not in documents:
+            documents[song] = []
+        documents[song].append(nname)
 
-    nname = normalize_name(playlist["name"])
     title_histogram[nname] += 1
-
-    if nname not in documents:
-        documents[nname] = []
-    documents[nname].extend(playlist_tracks)
 
 
 def normalize_name(name):
