@@ -64,7 +64,8 @@ def search():
         top_songs = text_mining.closest_songs_to_query([query], k=k)
         query = [query]
     print(top_songs)
-    return query, [song for song, score in top_songs]
+    # return query, [song for song, score in top_songs]
+    return [song for song, score in top_songs]
 
 
 @app.route("/rocchio", methods=["POST"])
@@ -83,4 +84,5 @@ def rocchio():
     )
     results = [song for song, score in top_songs[:k]]
     print(results)
-    return q1, results
+    # return q1, results
+    return results
