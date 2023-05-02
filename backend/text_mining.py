@@ -13,10 +13,11 @@ songs_compressed = None
 song_vectorizer = None
 td_matrix = None
 playlist_name_vectorizer = None
+song_playlist_matrix = None
 
 
 def init():
-    global song_vectorizer, playlist_name_to_index, index_to_playlist_name, playlist_names_compressed, songs_compressed, td_matrix, playlist_name_vectorizer
+    global song_vectorizer, song_playlist_matrix, playlist_name_to_index, index_to_playlist_name, playlist_names_compressed, songs_compressed, td_matrix, playlist_name_vectorizer
     song_vectorizer = TfidfVectorizer(
         tokenizer=lambda x: x, lowercase=False, max_df=0.7, min_df=1
     )
@@ -50,34 +51,41 @@ def closest_playlist_names(query):
     return res
 
 
-def closest_songs_to_query(query, k=10):
+def closest_songs_to_query(query, k=13):
     if all(isinstance(item, str) for item in query):
-        # Query is playlist names - vectorize.
+        # Query is playlist names - convert to vector
         query_tfidf = song_vectorizer.transform([query]).toarray()
         query_vec = normalize(np.dot(query_tfidf, playlist_names_compressed)).squeeze()
-    elif all(isinstance(item, str) for item in query):
+    else:
         # Query is already vectorized (from rocchio)
-        query_vec = query
+        query_vec = normalize(np.dot(query, playlist_names_compressed)).squeeze()
     sims = songs_compressed.dot(query_vec)
     asort = np.argsort(-sims)[:k]
     return [(list(preprocessing.documents.items())[i][0], sims[i]) for i in asort]
 
 
-def rocchio(q0, relevant_songs, irrelevant_songs, a=0.3, b=0.3, c=0.8, clip=True):
+def rocchio(q0, relevant_songs, irrelevant_songs, a=0.5, b=0.5, c=0.8, clip=True):
     q1 = a * q0
     if len(relevant_songs) > 0:
         rel_doc_sum = np.zeros((len(q0),))
         for rel_song in relevant_songs:
-            rel_doc_sum += td_matrix[preprocessing.documents.keys().index(rel_song)]
+            song_index = list(preprocessing.documents.keys()).index(rel_song)
+            rel_doc_sum += song_playlist_matrix[song_index]
         q1 += b * (1 / len(relevant_songs)) * rel_doc_sum
 
     if len(irrelevant_songs) > 0:
         irrel_doc_sum = np.zeros((len(q0),))
         for irrel_song in irrelevant_songs:
-            irrel_doc_sum += td_matrix[preprocessing.documents.keys().index(irrel_song)]
+            song_index = list(preprocessing.documents.keys()).index(irrel_song)
+            irrel_doc_sum += song_playlist_matrix[song_index]
         q1 -= c * (1 / len(irrelevant_songs)) * irrel_doc_sum
 
     if clip:
         q1 = np.clip(q1, 0, None)
 
     return q1, closest_songs_to_query(q1)
+
+
+def query_to_vec(query):
+    query_tfidf = song_vectorizer.transform([query]).toarray()
+    return query_tfidf

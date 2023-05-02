@@ -30,9 +30,12 @@ CORS(app)
 preprocessing.preprocess()
 text_mining.init()
 
+curr_query = None
+
 
 @app.route("/search")
 def search():
+    global curr_query
     query = request.args.get("title")
     query = preprocessing.normalize_name(query)
     top_songs = []
@@ -60,26 +63,30 @@ def search():
         # Query is existing playlist name
         top_songs = text_mining.closest_songs_to_query([query], k=k)
         query = [query]
+    print(query)
     print(top_songs)
-    # return query, [song for song, score in top_songs]
+    curr_query = text_mining.query_to_vec(query)
     return [song for song, score in top_songs]
 
 
 @app.route("/rocchio", methods=["POST"])
 def rocchio():
+    global curr_query
     data = request.json
     rel_track_list = data["rel_track_list"]
     irrel_track_list = data["irrel_track_list"]
     rel_track_list = [tuple(x) for x in rel_track_list]
     irrel_track_list = [tuple(x) for x in irrel_track_list]
-    k = 15
+    k = 13
     # if both are empty then just send the results as usual
     print("Relevant:", rel_track_list)
     print("Irrelevant:", irrel_track_list)
+    q0 = curr_query
     q1, top_songs = text_mining.rocchio(
-        [], rel_track_list, irrel_track_list, clip=False
+        q0, rel_track_list, irrel_track_list, clip=False
     )
     results = [song for song, score in top_songs[:k]]
+    print(q1)
     print(results)
-    # return q1, results
+    curr_query = q1
     return results
