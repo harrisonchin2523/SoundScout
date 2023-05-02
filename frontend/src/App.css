@@ -191,6 +191,10 @@ footer {
   background-color: rgb(100, 100, 100);
 }
 
+.selected {
+  background-color: rgb(100, 100, 100);
+}
+
 #result #left div p {
   pointer-events: none;
   padding-left: 0.5rem;
@@ -214,6 +218,12 @@ footer {
 
 #result #right #iframe {
   margin-top: 5rem;
+}
+
+#result #right p {
+  opacity: 0;
+  text-align: center;
+  color: whitesmoke;
 }
 
 #roc {
@@ -252,4 +262,20 @@ footer {
 #regen:hover {
   /* background-color: rgb(99, 98, 98); */
   color: deepskyblue;
+}
+
+.fade {
+  animation: fade 3.5s;
+}
+
+@keyframes fade {
+  0% {
+    opacity: 1;
+  }
+  99% {
+    opacity: 0.01;
+  }
+  100% {
+    opacity: 0;
+  }
 }
