@@ -23,26 +23,9 @@ else:
 
 
 load_dotenv()
+nltk.download("punkt")
 
-# ROOT_PATH for linking with all your files.
-# Feel free to use a config.py or settings.py with a global export variable
-# os.environ["ROOT_PATH"] = os.path.abspath(os.path.join("..", os.curdir))
-
-# # These are the DB credentials for your OWN MySQL
-# # Don't worry about the deployment credentials, those are fixed
-# # You can use a different DB name if you want to
-# MYSQL_USER = "root"
-# MYSQL_USER_PASSWORD = os.getenv("MYSQL_USER_PASSWORD")
-# MYSQL_PORT = 3306
-# MYSQL_DATABASE = "playlistsdb"
-
-# mysql_engine = MySQLDatabaseHandler(
-#     MYSQL_USER, MYSQL_USER_PASSWORD, MYSQL_PORT, MYSQL_DATABASE
-# )
-
-# # Path to init.sql file. This file can be replaced with your own file for testing on localhost, but do NOT move the init.sql file
-# mysql_engine.load_file_into_db()
-
+# albert xiao is so hot
 app = Flask(__name__)
 CORS(app)
 
@@ -93,3 +76,24 @@ def search():
     print(top_songs[:k])
     top_songs.sort(key=lambda x: x[1], reverse=True)
     return [song for song, score in top_songs[:k]]
+
+
+@app.route("/rocchio", methods=["POST"])
+def rocchio():
+    data = request.json
+    rel_track_list = data["rel_track_list"]
+    irrel_track_list = data["irrel_track_list"]
+    rel_track_list = [tuple(x) for x in rel_track_list]
+    irrel_track_list = [tuple(x) for x in irrel_track_list]
+    k = 15
+    # if both are empty then just send the results as usual
+    print("Relevant:", rel_track_list)
+    print("Irrelevant:", irrel_track_list)
+    closest_playlists = text_mining.regenerate_closest_playlists(
+        rel_track_list, irrel_track_list
+    )
+    top_songs = text_mining.top_songs(closest_playlists)
+    top_songs.sort(key=lambda x: x[1], reverse=True)
+    results = [song for song, score in top_songs[:k]]
+    print(results)
+    return results
