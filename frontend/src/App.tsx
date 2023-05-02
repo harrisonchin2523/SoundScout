@@ -101,6 +101,7 @@ const search: MouseEventHandler<HTMLImageElement> = (e) => {
   (document.getElementById("title") as HTMLDivElement).style.display = "none";
   fetch(
     "http://4300showcase.infosci.cornell.edu:4522/search?" +
+      // "http://localhost:5000/search?" +
       new URLSearchParams({
         title: (document.getElementById("filter-text-val") as HTMLInputElement)
           .value,
@@ -171,6 +172,7 @@ const enter = (event: KeyboardEvent) => {
     (document.getElementById("title") as HTMLDivElement).style.display = "none";
     fetch(
       "http://4300showcase.infosci.cornell.edu:4522/search?" +
+        // "http://localhost:5000/search?" +
         new URLSearchParams({
           title: (document.getElementById(
             "filter-text-val"
@@ -274,7 +276,7 @@ const regen: MouseEventHandler<HTMLDivElement> = (e) => {
     irrel_track_list: irrel_track_list,
   };
   clear();
-  fetch("http://localhost:5000/rocchio", {
+  fetch("http://4300showcase.infosci.cornell.edu:4522/rocchio", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
