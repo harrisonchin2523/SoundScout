@@ -1,4 +1,4 @@
-import React, { MouseEventHandler } from "react";
+import React, { KeyboardEventHandler, MouseEventHandler } from "react";
 import "./App.css";
 import "./iframe-api";
 declare global {
@@ -17,6 +17,7 @@ let rel_track_list: String[][] = [];
 let irrel_track_list: String[][] = [];
 
 let selected: number = 0;
+let rated: number[] = [];
 
 function App() {
   return (
@@ -32,7 +33,12 @@ function App() {
             </h1>
           </div>
           <div className="input-box" onClick={sendFocus}>
-            <img src="mag.png" onClick={search} alt="Search" />
+            <img
+              src="mag.png"
+              onClick={search}
+              // onKeyDown={handlePress}
+              alt="Search"
+            />
             <input placeholder="Search for a playlist" id="filter-text-val" />
           </div>
         </div>
@@ -42,6 +48,7 @@ function App() {
             <div id="iframe">
               <div id="embed-iframe" />
             </div>
+            <p id="thanks">Thank you for the feedback!</p>
             <div id="roc">
               <div onClick={rocUp}>👍</div>
               <div onClick={rocDown}>👎</div>
@@ -90,12 +97,9 @@ function clear() {
 
 const search: MouseEventHandler<HTMLImageElement> = (e) => {
   checkReady();
-  console.log(process.env.REACT_API_URL);
-  // (document.getElementById("answer-box") as HTMLDivElement).innerHTML = "";
   clear();
   (document.getElementById("title") as HTMLDivElement).style.display = "none";
   fetch(
-    // process.env.REACT_API_URL +
     "http://4300showcase.infosci.cornell.edu:4522/search?" +
       new URLSearchParams({
         title: (document.getElementById("filter-text-val") as HTMLInputElement)
@@ -109,8 +113,18 @@ const search: MouseEventHandler<HTMLImageElement> = (e) => {
         result[i] = row;
         let tempDiv = document.createElement("div");
         tempDiv.setAttribute("data-id", i.toString());
+        tempDiv.id = i.toString();
         tempDiv.onclick = function(e) {
           const element = e.target as HTMLElement;
+          if (
+            (document.getElementById(selected.toString()) as HTMLDivElement)
+              .classList != null
+          ) {
+            (document.getElementById(
+              selected.toString()
+            ) as HTMLDivElement).classList.remove("selected");
+          }
+          element.classList.add("selected");
           const i = parseInt(element.getAttribute("data-id") || "0");
           selected = i;
           EmbedController.loadUri(result[i][2]);
@@ -149,6 +163,77 @@ const parallax = (event: MouseEvent) => {
 
 document.addEventListener("mousemove", parallax);
 
+const enter = (event: KeyboardEvent) => {
+  if (event.code == "Enter") {
+    console.log("pressed enter");
+    checkReady();
+    clear();
+    (document.getElementById("title") as HTMLDivElement).style.display = "none";
+    fetch(
+      "http://4300showcase.infosci.cornell.edu:4522/search?" +
+        new URLSearchParams({
+          title: (document.getElementById(
+            "filter-text-val"
+          ) as HTMLInputElement).value,
+        }).toString()
+    )
+      .then((response) => response.json())
+      .then((data) =>
+        data.forEach((row: string[], i: number) => {
+          // each row is [song name, song artist, song uri]
+          result[i] = row;
+          let tempDiv = document.createElement("div");
+          tempDiv.setAttribute("data-id", i.toString());
+          tempDiv.id = i.toString();
+          tempDiv.onclick = function(e) {
+            const element = e.target as HTMLElement;
+            if (
+              (document.getElementById(selected.toString()) as HTMLDivElement)
+                .classList != null
+            ) {
+              (document.getElementById(
+                selected.toString()
+              ) as HTMLDivElement).classList.remove("selected");
+            }
+            element.classList.add("selected");
+            const i = parseInt(element.getAttribute("data-id") || "0");
+            selected = i;
+            EmbedController.loadUri(result[i][2]);
+          };
+          tempDiv.innerHTML = songTemplate(row);
+          const doc = document.getElementById("left") as HTMLElement;
+          doc.appendChild(tempDiv);
+        })
+      )
+      .then(() => {
+        if (IFrameAPI == null) {
+          // MAKE IT WAIT
+        }
+        // console.log(result);
+        const element = document.getElementById("embed-iframe");
+        const options = {
+          width: "400",
+          height: "400",
+          uri: result[0][2],
+        };
+        const callback = (controller: any) => {
+          EmbedController = controller;
+        };
+        IFrameAPI.createController(element, options, callback);
+      });
+  }
+};
+
+document.addEventListener("keydown", enter);
+
+// const handlePress: KeyboardEventHandler<HTMLImageElement> = (e) => {
+//   console.log("handler");
+//   if (e.key === "Enter") {
+//     console.log("enter");
+//     search;
+//   }
+// };
+
 window.onSpotifyIframeApiReady = (IFrameApi: any) => {
   IFrameAPI = IFrameApi;
   ready = true;
@@ -162,29 +247,25 @@ function checkReady() {
 }
 
 const rocUp: MouseEventHandler<HTMLDivElement> = (e) => {
-  // console.log(result[selected]);
   if (
     !rel_track_list.includes(result[selected]) &&
     !irrel_track_list.includes(result[selected])
   ) {
     rel_track_list.push(result[selected]);
-    // console.log("stored");
-  } else {
-    // console.log("already stored");
   }
+  // (document.getElementById("thanks") as HTMLElement).classList.add("fade");
+  // (document.getElementById("thanks") as HTMLElement).classList.remove("fade");
 };
 
 const rocDown: MouseEventHandler<HTMLDivElement> = (e) => {
-  // console.log(result[selected]);
   if (
     !rel_track_list.includes(result[selected]) &&
     !irrel_track_list.includes(result[selected])
   ) {
     irrel_track_list.push(result[selected]);
-    // console.log("stored");
-  } else {
-    // console.log("already stored");
   }
+  // (document.getElementById("thanks") as HTMLElement).classList.add("fade");
+  // (document.getElementById("thanks") as HTMLElement).classList.remove("fade");
 };
 
 const regen: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -193,12 +274,10 @@ const regen: MouseEventHandler<HTMLDivElement> = (e) => {
     irrel_track_list: irrel_track_list,
   };
   clear();
-  // process.env.REACT_API_URL +
-  fetch("http://4300showcase.infosci.cornell.edu:4522/rocchio", {
+  fetch("http://localhost:5000/rocchio", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      // 'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: JSON.stringify(send),
   })
@@ -224,7 +303,6 @@ const regen: MouseEventHandler<HTMLDivElement> = (e) => {
       if (IFrameAPI == null) {
         // MAKE IT WAIT
       }
-      // console.log(result);
       const element = document.getElementById("embed-iframe");
       const options = {
         width: "400",
