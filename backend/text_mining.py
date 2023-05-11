@@ -47,7 +47,7 @@ def closest_playlist_names(query):
     query_vec = playlist_name_vectorizer.transform([query]).toarray()
     sims = cosine_similarity(query_vec, td_matrix)
     asort = np.argsort(-sims)
-    res = [list(playlist_name_to_index.keys())[i] for i in asort[0] if sims[0][i] > 0.6]
+    res = [(list(playlist_name_to_index.keys())[i], sims[i]) for i in asort[0] if sims[0][i] > 0.6]
     return res
 
 

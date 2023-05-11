@@ -68,7 +68,9 @@ function App() {
 }
 
 function songTemplate(song: string[]) {
-  return `<p>${song[0]}</p><p>${song[1]}</p>`;
+  return `<p>${song[0][0]}</p><p>${song[0][1]}</p><p>${(
+    parseFloat(song[1]) * 100
+  ).toFixed(2)}% Match</p>`;
 }
 
 const sendFocus: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -101,7 +103,7 @@ const search: MouseEventHandler<HTMLImageElement> = (e) => {
   (document.getElementById("title") as HTMLDivElement).style.display = "none";
   fetch(
     "http://4300showcase.infosci.cornell.edu:4522/search?" +
-      // "http://localhost:5000/search?" +
+      // "http://localhost:5050/search?" +
       new URLSearchParams({
         title: (document.getElementById("filter-text-val") as HTMLInputElement)
           .value,
@@ -110,7 +112,7 @@ const search: MouseEventHandler<HTMLImageElement> = (e) => {
     .then((response) => response.json())
     .then((data) =>
       data.forEach((row: string[], i: number) => {
-        // each row is [song name, song artist, song uri]
+        // each row is [song name, song artist, song uri, score]
         result[i] = row;
         let tempDiv = document.createElement("div");
         tempDiv.setAttribute("data-id", i.toString());
@@ -128,7 +130,7 @@ const search: MouseEventHandler<HTMLImageElement> = (e) => {
           element.classList.add("selected");
           const i = parseInt(element.getAttribute("data-id") || "0");
           selected = i;
-          EmbedController.loadUri(result[i][2]);
+          EmbedController.loadUri(result[i][0][2]);
         };
         tempDiv.innerHTML = songTemplate(row);
         const doc = document.getElementById("left") as HTMLElement;
@@ -172,7 +174,7 @@ const enter = (event: KeyboardEvent) => {
     (document.getElementById("title") as HTMLDivElement).style.display = "none";
     fetch(
       "http://4300showcase.infosci.cornell.edu:4522/search?" +
-        // "http://localhost:5000/search?" +
+        // "http://localhost:5050/search?" +
         new URLSearchParams({
           title: (document.getElementById(
             "filter-text-val"
@@ -182,7 +184,8 @@ const enter = (event: KeyboardEvent) => {
       .then((response) => response.json())
       .then((data) =>
         data.forEach((row: string[], i: number) => {
-          // each row is [song name, song artist, song uri]
+          // each row is [song name, song artist, song uri, score]
+          console.log("Row", row);
           result[i] = row;
           let tempDiv = document.createElement("div");
           tempDiv.setAttribute("data-id", i.toString());
@@ -200,7 +203,7 @@ const enter = (event: KeyboardEvent) => {
             element.classList.add("selected");
             const i = parseInt(element.getAttribute("data-id") || "0");
             selected = i;
-            EmbedController.loadUri(result[i][2]);
+            EmbedController.loadUri(result[i][0][2]);
           };
           tempDiv.innerHTML = songTemplate(row);
           const doc = document.getElementById("left") as HTMLElement;
@@ -276,6 +279,7 @@ const regen: MouseEventHandler<HTMLDivElement> = (e) => {
     irrel_track_list: irrel_track_list,
   };
   clear();
+  // "http://localhost:5050/rocchio"
   fetch("http://4300showcase.infosci.cornell.edu:4522/rocchio", {
     method: "POST",
     headers: {

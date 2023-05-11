@@ -64,10 +64,15 @@ def search():
         closest_playlist_names = text_mining.closest_playlist_names(query)
         top_songs = text_mining.closest_songs_to_query(closest_playlist_names, k=k)
         query = closest_playlist_names
-    print(query)
-    print(top_songs)
+    # print("Query", query)
+    # print(top_songs)
     curr_query = text_mining.query_to_vec(query)
-    return [song for song, score in top_songs]
+    new_top_songs = []
+    for song1, song2,  in zip(top_songs, query):
+        new_top_songs.append((song1[0], song1[1] * song2[1]))
+
+    # return [song for song, score in top_songs]
+    return new_top_songs
 
 
 @app.route("/rocchio", methods=["POST"])
@@ -90,4 +95,4 @@ def rocchio():
     print(q1)
     print(results)
     curr_query = q1
-    return results
+    return top_songs[:k]
