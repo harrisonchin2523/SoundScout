@@ -62,13 +62,14 @@ def search():
     else:
         # Query is existing playlist name
         closest_playlist_names = text_mining.closest_playlist_names(query)
-        top_songs = text_mining.closest_songs_to_query(closest_playlist_names, k=k)
+        only_playlist_names = [playlist_name for playlist_name, score in closest_playlist_names]
+        top_songs = text_mining.closest_songs_to_query(only_playlist_names, k=k)
         query = closest_playlist_names
     # print("Query", query)
     # print(top_songs)
     curr_query = text_mining.query_to_vec(query)
     new_top_songs = []
-    for song1, song2,  in zip(top_songs, query):
+    for song1, song2 in zip(top_songs, query):
         new_top_songs.append((song1[0], song1[1] * song2[1]))
 
     # return [song for song, score in top_songs]
