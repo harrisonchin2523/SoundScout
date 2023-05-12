@@ -279,8 +279,8 @@ const regen: MouseEventHandler<HTMLDivElement> = (e) => {
     irrel_track_list: irrel_track_list,
   };
   clear();
-  // "http://localhost:5050/rocchio"
-  fetch("http://4300showcase.infosci.cornell.edu:4522/rocchio", {
+  //"http://4300showcase.infosci.cornell.edu:4522/rocchio" "http://localhost:5050/rocchio"
+  fetch("http://localhost:5050/rocchio", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
