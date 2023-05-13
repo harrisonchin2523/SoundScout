@@ -68,12 +68,12 @@ def search():
     # print("Query", query)
     # print(top_songs)
     curr_query = text_mining.query_to_vec(query)
-    new_top_songs = []
-    for song1, song2 in zip(top_songs, query):
-        new_top_songs.append((song1[0], song1[1] * song2[1]))
+    # new_top_songs = []
+    # for song1, song2 in zip(top_songs, query):
+    #     new_top_songs.append((song1[0], song1[1] * song2[1]))
 
     # return [song for song, score in top_songs]
-    return new_top_songs
+    return top_songs
 
 
 @app.route("/rocchio", methods=["POST"])
