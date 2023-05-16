@@ -58,6 +58,7 @@ def search():
                 list(text_mining.playlist_name_to_index.keys()),
                 scorer=fuzz.token_set_ratio,
             )[0]
+            print("No tokens shared. Using:", closest_name)
             top_songs = text_mining.closest_songs_to_query([closest_name], k=k)
             query = [closest_name]
     else:
@@ -91,7 +92,5 @@ def rocchio():
     q1, top_songs = text_mining.rocchio(
         q0, rel_track_list, irrel_track_list, clip=False
     )
-    print(q1)
-    print(top_songs[:k])
     curr_query = q1
     return top_songs[:k]
