@@ -181,11 +181,13 @@ footer {
   margin-top: 0.5rem;
   border-radius: 0.5rem;
   padding: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
-#result #left div:last-child {
-  margin-bottom: 0.5rem;
-}
+/* #result #left div:last-child {
+  margin-bottom: 0.25rem;
+  margin-top: 0.25rem;
+} */
 
 #result #left > *:hover {
   background-color: rgb(100, 100, 100);
@@ -202,9 +204,28 @@ footer {
   margin: 0;
 }
 
-#result #left div p:nth-child(2) {
+/* #result #left div p:nth-child(2) {
   font-size: 0.9rem;
   color: rgb(235, 232, 232);
+} */
+
+#result #left div div {
+  display: flex;
+  flex-direction: row;
+  color: whitesmoke;
+  font-size: 0.9rem;
+  padding-left: 0.5rem;
+  margin: 0;
+  text-align: right;
+}
+
+#result #left div div > * {
+  padding: 0;
+}
+
+#result #left div div:last-child {
+  margin-left: auto;
+  padding-right: 0.5rem;
 }
 
 #result #right {

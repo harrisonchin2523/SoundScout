@@ -68,9 +68,9 @@ function App() {
 }
 
 function songTemplate(song: string[]) {
-  return `<p>${song[0][0]}</p><p>${song[0][1]}</p><p>${(
+  return `<p>${song[0][0]}</p><div><div>${song[0][1]}</div><div>${(
     parseFloat(song[1]) * 100
-  ).toFixed(2)}% Match</p>`;
+  ).toFixed(2)}% Match</div></div>`;
 }
 
 const sendFocus: MouseEventHandler<HTMLDivElement> = (e) => {
