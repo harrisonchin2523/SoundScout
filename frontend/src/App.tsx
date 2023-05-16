@@ -104,11 +104,11 @@ const search: MouseEventHandler<HTMLImageElement> = (e) => {
   (document.getElementById("title") as HTMLDivElement).style.display = "none";
   fetch(
     "http://4300showcase.infosci.cornell.edu:4522/search?" +
-      // "http://localhost:5050/search?" +
-      new URLSearchParams({
-        title: (document.getElementById("filter-text-val") as HTMLInputElement)
-          .value,
-      }).toString()
+    // "http://localhost:5050/search?" +
+    new URLSearchParams({
+      title: (document.getElementById("filter-text-val") as HTMLInputElement)
+        .value,
+    }).toString()
   )
     .then((response) => response.json())
     .then((data) =>
@@ -118,7 +118,7 @@ const search: MouseEventHandler<HTMLImageElement> = (e) => {
         let tempDiv = document.createElement("div");
         tempDiv.setAttribute("data-id", i.toString());
         tempDiv.id = i.toString();
-        tempDiv.onclick = function(e) {
+        tempDiv.onclick = function (e) {
           const element = e.target as HTMLElement;
           if (
             (document.getElementById(selected.toString()) as HTMLDivElement)
@@ -175,12 +175,12 @@ const enter = (event: KeyboardEvent) => {
     (document.getElementById("title") as HTMLDivElement).style.display = "none";
     fetch(
       "http://4300showcase.infosci.cornell.edu:4522/search?" +
-        // "http://localhost:5050/search?" +
-        new URLSearchParams({
-          title: (document.getElementById(
-            "filter-text-val"
-          ) as HTMLInputElement).value,
-        }).toString()
+      // "http://localhost:5050/search?" +
+      new URLSearchParams({
+        title: (document.getElementById(
+          "filter-text-val"
+        ) as HTMLInputElement).value,
+      }).toString()
     )
       .then((response) => response.json())
       .then((data) =>
@@ -191,7 +191,7 @@ const enter = (event: KeyboardEvent) => {
           let tempDiv = document.createElement("div");
           tempDiv.setAttribute("data-id", i.toString());
           tempDiv.id = i.toString();
-          tempDiv.onclick = function(e) {
+          tempDiv.onclick = function (e) {
             const element = e.target as HTMLElement;
             if (
               (document.getElementById(selected.toString()) as HTMLDivElement)
@@ -281,7 +281,7 @@ const regen: MouseEventHandler<HTMLDivElement> = (e) => {
   };
   clear();
   //"http://4300showcase.infosci.cornell.edu:4522/rocchio" "http://localhost:5050/rocchio"
-  fetch("http://localhost:5050/rocchio", {
+  fetch("http://4300showcase.infosci.cornell.edu:4522/rocchio", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -296,7 +296,7 @@ const regen: MouseEventHandler<HTMLDivElement> = (e) => {
         let tempDiv = document.createElement("div");
         tempDiv.setAttribute("data-id", i.toString());
         tempDiv.id = i.toString();
-        tempDiv.onclick = function(e) {
+        tempDiv.onclick = function (e) {
           const element = e.target as HTMLElement;
           if (
             (document.getElementById(selected.toString()) as HTMLDivElement)
