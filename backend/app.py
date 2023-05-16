@@ -45,6 +45,7 @@ def search():
         # Find best matches to existing playlist names
         query = " ".join(preprocessing.tokenize(query))
         closest_playlist_names = text_mining.closest_playlist_names(query)
+        closest_playlist_names = [name for name, score in closest_playlist_names]
         print("Matching with:", closest_playlist_names)
         if len(closest_playlist_names) > 0:
             # Query terms exist in playlist titles
@@ -61,10 +62,8 @@ def search():
             query = [closest_name]
     else:
         # Query is existing playlist name
-        closest_playlist_names = text_mining.closest_playlist_names(query)
-        only_playlist_names = [playlist_name for playlist_name, score in closest_playlist_names]
-        top_songs = text_mining.closest_songs_to_query(only_playlist_names, k=k)
-        query = closest_playlist_names
+        top_songs = text_mining.closest_songs_to_query([query], k=k)
+        query = [query]
     # print("Query", query)
     # print(top_songs)
     curr_query = text_mining.query_to_vec(query)

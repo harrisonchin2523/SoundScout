@@ -53,6 +53,11 @@ def process_playlist(playlist):
             documents[song] = []
         documents[song].append(nname)
 
+        artist_nname = normalize_name(track["artist"])
+        if artist_nname not in documents[song]:
+            # "create" playlist titled artist_nname if it doesn't exist
+            documents[song].append(artist_nname)
+
     title_histogram[nname] += 1
 
 

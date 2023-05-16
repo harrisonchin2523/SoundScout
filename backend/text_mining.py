@@ -19,7 +19,7 @@ song_playlist_matrix = None
 def init():
     global song_vectorizer, song_playlist_matrix, playlist_name_to_index, index_to_playlist_name, playlist_names_compressed, songs_compressed, td_matrix, playlist_name_vectorizer
     song_vectorizer = TfidfVectorizer(
-        tokenizer=lambda x: x, lowercase=False, max_df=0.7, min_df=1
+        tokenizer=lambda x: x, lowercase=False, max_df=0.7, min_df=5
     )
     song_playlist_matrix = song_vectorizer.fit_transform(
         [preprocessing.documents[x] for x in preprocessing.documents]
@@ -47,7 +47,11 @@ def closest_playlist_names(query):
     query_vec = playlist_name_vectorizer.transform([query]).toarray()
     sims = cosine_similarity(query_vec, td_matrix)
     asort = np.argsort(-sims)
-    res = [(list(playlist_name_to_index.keys())[i], sims[0][i]) for i in asort[0] if sims[0][i] > 0.6]
+    res = [
+        (list(playlist_name_to_index.keys())[i], sims[0][i])
+        for i in asort[0]
+        if sims[0][i] > 0.6
+    ]
     return res
 
 
