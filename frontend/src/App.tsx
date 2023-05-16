@@ -95,6 +95,7 @@ function clear() {
   rel_track_list = [];
   irrel_track_list = [];
   EmbedController = null;
+  selected = 0;
 }
 
 const search: MouseEventHandler<HTMLImageElement> = (e) => {
@@ -288,7 +289,7 @@ const regen: MouseEventHandler<HTMLDivElement> = (e) => {
     body: JSON.stringify(send),
   })
     .then((response) => response.json())
-    .then((data) => {
+    .then((data) =>
       data.forEach((row: string[], i: number) => {
         // each row is [song name, song artist, song uri]
         result[i] = row;
@@ -313,8 +314,8 @@ const regen: MouseEventHandler<HTMLDivElement> = (e) => {
         tempDiv.innerHTML = songTemplate(row);
         const doc = document.getElementById("left") as HTMLElement;
         doc.appendChild(tempDiv);
-      });
-    })
+      })
+    )
     .then(() => {
       if (IFrameAPI == null) {
         // MAKE IT WAIT
