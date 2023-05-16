@@ -217,6 +217,7 @@ footer {
   padding-left: 0.5rem;
   margin: 0;
   text-align: right;
+  pointer-events: none;
 }
 
 #result #left div div > * {
