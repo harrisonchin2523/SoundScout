@@ -185,7 +185,7 @@ const enter = (event: KeyboardEvent) => {
       .then((data) =>
         data.forEach((row: string[], i: number) => {
           // each row is [song name, song artist, song uri, score]
-          console.log("Row", row);
+          // console.log("Row", row);
           result[i] = row;
           let tempDiv = document.createElement("div");
           tempDiv.setAttribute("data-id", i.toString());
@@ -294,11 +294,21 @@ const regen: MouseEventHandler<HTMLDivElement> = (e) => {
         result[i] = row;
         let tempDiv = document.createElement("div");
         tempDiv.setAttribute("data-id", i.toString());
+        tempDiv.id = i.toString();
         tempDiv.onclick = function(e) {
           const element = e.target as HTMLElement;
+          if (
+            (document.getElementById(selected.toString()) as HTMLDivElement)
+              .classList != null
+          ) {
+            (document.getElementById(
+              selected.toString()
+            ) as HTMLDivElement).classList.remove("selected");
+          }
+          element.classList.add("selected");
           const i = parseInt(element.getAttribute("data-id") || "0");
           selected = i;
-          EmbedController.loadUri(result[i][2]);
+          EmbedController.loadUri(result[i][0][2]);
         };
         tempDiv.innerHTML = songTemplate(row);
         const doc = document.getElementById("left") as HTMLElement;
