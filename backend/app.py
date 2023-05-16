@@ -81,9 +81,9 @@ def rocchio():
     data = request.json
     rel_track_list = data["rel_track_list"]
     irrel_track_list = data["irrel_track_list"]
-    rel_track_list = [tuple(x) for x in rel_track_list]
-    irrel_track_list = [tuple(x) for x in irrel_track_list]
-    k = 13
+    rel_track_list = [tuple(track) for track, sim in rel_track_list]
+    irrel_track_list = [tuple(track) for track, sim in irrel_track_list]
+    k = 14
     # if both are empty then just send the results as usual
     print("Relevant:", rel_track_list)
     print("Irrelevant:", irrel_track_list)
@@ -91,8 +91,7 @@ def rocchio():
     q1, top_songs = text_mining.rocchio(
         q0, rel_track_list, irrel_track_list, clip=False
     )
-    results = [song for song, score in top_songs[:k]]
     print(q1)
-    print(results)
+    print(top_songs[:k])
     curr_query = q1
     return top_songs[:k]
